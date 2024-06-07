@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Artista {
+  IDARTISTA         Int                 @id @default(autoincrement())
+  NOMEARTISTICO     String
+  NOMECOMPLETO      String
+  ATIVIDADES        String?
+  DATANASC          DateTime?
+  CPF               String?             @db.VarChar(11)
+  CONTATO1          String?             @db.VarChar(11)
+  CONTATO2          String?             @db.VarChar(11)
+  GENERO            String?             @db.VarChar(1)
+  ORIENTACAOSEXUAL  String?             @db.VarChar(50)
+  BIOGRAFIA         String?
+  DATACAD           DateTime?
+  ATIVO             String              @db.VarChar(1) @default("S")
+  Atuacoes          Atuacao[]
+  ColetivoArtistas  ColetivoArtistas[]
+}
+
+model Atuacao {
+  IDATUACAO  Int      @id @default(autoincrement())
+  IDARTISTA  Int
+  DESCRICAO  String
+  DATACAD    DateTime?
+  Artista    Artista  @relation(fields: [IDARTISTA], references: [IDARTISTA])
+}
+
+model Coletivo {
+  IDCOLETIVO            Int                 @id @default(autoincrement())
+  IDUSUARIO             Int
+  NOMECOLETIVO          String              @db.VarChar(150)
+  ATIVIDADES            String?
+  PUBLICOALVO           String?
+  NOMEREPRESENTANTE     String?             @db.VarChar(255)
+  CPFREPRESENTANTE      String?             @db.VarChar(11)
+  CONTATOREPRESENTANTE  String?             @db.VarChar(11)
+  CNPJ                  String?             @db.VarChar(14)
+  NOMEFANTASIA          String?             @db.VarChar(255)
+  RAZAOSOCIAL           String?             @db.VarChar(255)
+  DATAENCERRAMENTO      DateTime?
+  DATACAD               DateTime?
+  ATIVO                 String              @db.VarChar(1) @default("S")
+  Usuario               Usuario             @relation(fields: [IDUSUARIO], references: [IDUSUARIO])
+  ColetivoArtistas      ColetivoArtistas[]
+  Projetos              Projeto[]
+}
+
+model ColetivoArtistas {
+  IDCOLETIVOARTISTAS  Int       @id @default(autoincrement())
+  IDCOLETIVO          Int
+  IDARTISTA           Int
+  DATACAD             DateTime?
+  ATIVO               String    @db.VarChar(1) @default("S")
+  DATASAIDA           DateTime?
+  MOTIVOSAIDA         String?
+  Coletivo            Coletivo  @relation(fields: [IDCOLETIVO], references: [IDCOLETIVO])
+  Artista             Artista   @relation(fields: [IDARTISTA], references: [IDARTISTA])
+}
+
+model Empresa {
+  IDEMPRESA      Int       @id @default(autoincrement())
+  NOMEFANTASIA   String    @db.VarChar(255)
+  RAZAOSOCIAL    String?   @db.VarChar(255)
+  CNPJ           String?   @db.VarChar(14)
+  CEP            String?   @db.VarChar(8)
+  LOGRADOURO     String?   @db.VarChar(255)
+  NUMERO         String?   @db.VarChar(10)
+  COMPLEMENTO    String?   @db.VarChar(50)
+  BAIRRO         String?   @db.VarChar(100)
+  CIDADE         String?   @db.VarChar(100)
+  SIGLAESTADO    String?   @db.VarChar(2)
+  DATACAD        DateTime?
+  ATIVO          String    @db.VarChar(1) @default("S")
+}
+
+model Projeto {
+  IDPROJETO       Int       @id @default(autoincrement())
+  IDCOLETIVO      Int
+  NOMEPROJETO     String    @db.VarChar(255)
+  SEGMENTO        String?   @db.VarChar(50)
+  DATAINICIO      DateTime?
+  DATAFIM         DateTime?
+  PUBLICOALVO     String?
+  LINKEDITAL      String?   @db.VarChar(255)
+  NOMEEDITAL      String?   @db.VarChar(255)
+  DATAREALIZADO   DateTime?
+  VALORPROJETO    Float?
+  VALOREDITAL     Float?
+  LINKDRIVE       String?
+  DATACAD         DateTime?
+  ATIVO           String    @db.VarChar(1) @default("S")
+  Coletivo        Coletivo  @relation(fields: [IDCOLETIVO], references: [IDCOLETIVO])
+}
+
+model Usuario {
+  IDUSUARIO     Int         @id @default(autoincrement())
+  USUARIO       String      @db.VarChar(40)
+  SENHA         String      @db.VarChar(16)
+  EMAIL         String?     @db.VarChar(255)
+  ADMINISTRADOR String      @db.VarChar(1) @default("N")
+  DATACAD       DateTime?
+  ATIVO         String      @db.VarChar(1) @default("S")
+  Coletivos     Coletivo[]
+}
+
